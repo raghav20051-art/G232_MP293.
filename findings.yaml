@@ -1,62 +1,70 @@
+
 # MP293 findings --- fill in every value, keep every key.
 # The marking tool reads this file. Write null only where the comment says so.
 # Use the exact column names and group values from your data files.
 
-group_id: "G232"          # your group id, e.g. "G042"
+group_id: "G232"
 problem_id: "MP293"
 
 data_issues:
-  # For each of the 7 kinds: present: true or false.
-  # If present is false, leave the other values as null.
   leaking_column:
-    present: null
-    column: null           # the column that must not be used as a feature
+    present: false
+    column: null
+
   unit_mixup:
-    present: null
-    column: null           # the column recorded in a different unit
-    group_value: null      # the value of area whose rows are affected
-    factor: null           # wrong value = right value x factor
+    present: true
+    column: "distance_to_market_km"
+    group_value: "Highway"
+    factor: 1000
+
   sentinel_value:
-    present: null
-    column: null
-    value: null            # the special number typed instead of a blank
-    count: null            # how many rows have it
+    present: true
+    column: "avg_ticket_rs"
+    value: -999
+    count: 54
+
   duplicate_rows:
-    present: null
-    count: null            # number of EXTRA copies (rows you would delete)
+    present: false
+    count: null
+
   stuck_sensor:
-    present: null
-    column: null
-    start_date: null       # first date with the stuck value, YYYY-MM-DD
-    end_date: null         # last date with the stuck value, YYYY-MM-DD
+    present: true
+    column: "days_to_salary"
+    start_date: "2026-04-10"
+    end_date: "2026-04-26"
+
   target_typos:
-    present: null
-    count: null            # rows whose target was typed 10 times too big
+    present: false
+    count: null
+
   spelling_variants:
-    present: null
-    column: null
-    true_levels: null      # how many real categories there are after cleaning
+    present: true
+    column: "atm_type"
+    true_levels: 3
 
 tracking:
   experiment_name: null
-  best_run_id: null        # the MLflow run id of your v1 model
+  best_run_id: null
   registered_model_name: null
   champion_version: null
 
 monitoring:
-  psi:                     # cleaned train.csv vs later.csv, 10 bins
+  psi:
     nearby_shops: null
     days_to_salary: null
     footfall_index: null
     distance_to_market_km: null
     avg_ticket_rs: null
     other_atms_1km: null
+
   most_drifted_feature: null
-  mae_by_group:            # v1 on later.csv, per value of area
+
+  mae_by_group:
     'Market': null
     'Residential': null
     'Highway': null
+
   worst_served_group: null
-  mae_v1_on_check: null    # v1 on the last 30% of later.csv (by date)
-  mae_v2_on_check: null    # v2 on the same rows
-  decision: null           # promote or keep
+  mae_v1_on_check: null
+  mae_v2_on_check: null
+  decision: null
