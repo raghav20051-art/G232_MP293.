@@ -68,7 +68,9 @@ G232_MP293/
 │   └── mp293/
 │       ├── __init__.py
 │       └── data_quality.py
+├── .gitignore
 ├── findings.yaml
+├── requirements.txt
 ├── GROUP.md
 ├── PROBLEM.md
 ├── STUDENT_HANDBOOK.md
@@ -77,13 +79,67 @@ G232_MP293/
 
 ## Setup
 
-Install the required packages:
+### Prerequisites
+
+- Python 3.11
+- Git
+- Internet connection for installing dependencies
+
+### 1. Clone the repository
 
 ```bash
-python -m pip install pandas pyyaml
+git clone https://github.com/raghav20051-art/G232_MP293..git
+cd G232_MP293.
 ```
 
-Run the data investigation module from the project root:
+### 2. Create a Python virtual environment
+
+A separate virtual environment should be created by each team member on their own computer.
+
+**Windows (PowerShell):**
+
+```powershell
+py -3.11 -m venv .venv
+.venv\Scripts\Activate.ps1
+```
+
+**macOS / Linux:**
+
+```bash
+python3.11 -m venv .venv
+source .venv/bin/activate
+```
+
+### 3. Install dependencies
+
+Install all project dependencies using the shared `requirements.txt` file:
+
+```bash
+python -m pip install --upgrade pip
+pip install -r requirements.txt
+```
+
+### 4. Verify the installation
+
+```bash
+python -c "import pandas, yaml, dvc; print('All dependencies imported successfully')"
+```
+
+### 5. Access DVC-tracked datasets
+
+The datasets are tracked using DVC.
+
+To download the datasets from a configured and accessible shared DVC remote, run:
+
+```bash
+python -m dvc pull
+```
+
+**Note:** A shared DVC remote must be configured and accessible before this command can retrieve the datasets.
+
+### 6. Run the data investigation module
+
+Run this command from the project root:
 
 ```bash
 python -m src.mp293.data_quality
@@ -91,8 +147,9 @@ python -m src.mp293.data_quality
 
 ## Tools and Technologies
 
-- Python
+- Python 3.11
 - Pandas
+- PyYAML
 - Git and GitHub
 - DVC
 - YAML
@@ -102,4 +159,3 @@ Additional tools and technologies will be documented as the project progresses.
 ## Repository
 
 GitHub: https://github.com/raghav20051-art/G232_MP293.
-
