@@ -1,0 +1,11 @@
+stages:
+  prepare_data:
+    cmd: python -m src.mp293.prepare_data
+    deps:
+    - data/holdout_features.csv
+    - data/later.csv
+    - data/train.csv
+    - src/mp293/prepare_data.py
+    - src/mp293/preprocessing.py
+    outs:
+    - data/processed
