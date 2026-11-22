@@ -1,0 +1,26 @@
+
+# Project configuration
+
+data:
+  train_path: data/train.csv
+  later_path: data/later.csv
+  holdout_path: data/holdout_features.csv
+  processed_dir: data/processed
+
+preprocessing:
+  target: withdrawal_thousand_rs
+
+  numeric_features:
+    - nearby_shops
+    - days_to_salary
+    - footfall_index
+    - distance_to_market_km
+    - avg_ticket_rs
+    - other_atms_1km
+
+  categorical_features:
+    - atm_type
+    - area
+
+  sentinel_value: -999
+  highway_distance_divisor: 1000

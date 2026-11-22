@@ -1,25 +1,25 @@
 
 """Preprocessing utilities for ATM cash demand prediction."""
 
-from pathlib import Path
-
 import pandas as pd
 
+from src.mp293.config import load_config
 
-TARGET = "withdrawal_thousand_rs"
 
-NUMERIC_FEATURES = [
-    "nearby_shops",
-    "days_to_salary",
-    "footfall_index",
-    "distance_to_market_km",
-    "avg_ticket_rs",
-    "other_atms_1km",
-]
+CONFIG = load_config()
+PREPROCESSING_CONFIG = CONFIG["preprocessing"]
 
-CATEGORICAL_FEATURES = ["atm_type", "area"]
+TARGET = PREPROCESSING_CONFIG["target"]
+
+NUMERIC_FEATURES = PREPROCESSING_CONFIG["numeric_features"]
+CATEGORICAL_FEATURES = PREPROCESSING_CONFIG["categorical_features"]
 
 FEATURES = NUMERIC_FEATURES + CATEGORICAL_FEATURES
+
+SENTINEL_VALUE = PREPROCESSING_CONFIG["sentinel_value"]
+HIGHWAY_DISTANCE_DIVISOR = PREPROCESSING_CONFIG[
+    "highway_distance_divisor"
+]
 
 ATM_TYPE_MAP = {
     "bank_branch": "bank_branch",
@@ -47,12 +47,7 @@ def normalize_atm_type(value):
 
 
 def clean_dataset(df, dataset_name="dataset"):
-    """
-    Clean a dataset without changing the original DataFrame.
-
-    The training dataset is expected to contain Highway distances
-    in metres. Later and Holdout distances are already in kilometres.
-    """
+    """Clean a dataset without changing the original DataFrame."""
 
     cleaned = df.copy()
 
@@ -72,9 +67,9 @@ def clean_dataset(df, dataset_name="dataset"):
             f"{dataset_name} is missing columns: {missing_columns}"
         )
 
-    # Convert invalid sentinel values into missing values.
+    # Replace invalid sentinel values.
     cleaned["avg_ticket_rs"] = cleaned["avg_ticket_rs"].replace(
-        -999, float("nan")
+        SENTINEL_VALUE, float("nan")
     )
 
     # Normalize ATM type values.
@@ -83,9 +78,11 @@ def clean_dataset(df, dataset_name="dataset"):
     )
 
     # Normalize area text.
-    cleaned["area"] = cleaned["area"].astype("string").str.strip().str.lower()
+    cleaned["area"] = (
+        cleaned["area"].astype("string").str.strip().str.lower()
+    )
 
-    # Correct the known training-only Highway distance unit issue.
+    # Correct the training-only Highway distance unit issue.
     if dataset_name.lower() == "train":
         highway_mask = cleaned["area"] == "highway"
 
@@ -94,16 +91,16 @@ def clean_dataset(df, dataset_name="dataset"):
         ] = (
             cleaned.loc[
                 highway_mask, "distance_to_market_km"
-            ] / 1000
+            ] / HIGHWAY_DISTANCE_DIVISOR
         )
 
-    # Convert numeric features to numeric types.
+    # Convert numeric features.
     for column in NUMERIC_FEATURES:
         cleaned[column] = pd.to_numeric(
             cleaned[column], errors="coerce"
         )
 
-    # Validate target values when target is present.
+    # Validate target values.
     if TARGET in cleaned.columns:
         cleaned[TARGET] = pd.to_numeric(
             cleaned[TARGET], errors="coerce"
@@ -118,10 +115,7 @@ def clean_dataset(df, dataset_name="dataset"):
 
 
 def fit_preprocessor(train_df):
-    """
-    Learn numeric imputation values and categorical categories
-    from training data only.
-    """
+    """Learn imputation values and categories from training data only."""
 
     numeric_medians = train_df[NUMERIC_FEATURES].median()
 
@@ -160,7 +154,7 @@ def transform_dataset(df, preprocessor):
     for column, median in preprocessor["numeric_medians"].items():
         transformed[column] = transformed[column].fillna(median)
 
-    # One-hot encoding using categories learned from training.
+    # One-hot encoding using training categories.
     for column, categories in preprocessor[
         "categorical_categories"
     ].items():
@@ -172,15 +166,13 @@ def transform_dataset(df, preprocessor):
                 values == category
             ).astype(int)
 
-        # Unseen or missing categories are represented by all-zero
-        # encoded columns for that feature.
         transformed = transformed.drop(columns=[column])
 
     return transformed
 
 
 def preprocess_all(train_df, later_df, holdout_df):
-    """Clean, fit and transform all datasets consistently."""
+    """Clean and transform all datasets consistently."""
 
     train_clean = clean_dataset(train_df, "train")
     later_clean = clean_dataset(later_df, "later")
@@ -206,31 +198,3 @@ def preprocess_all(train_df, later_df, holdout_df):
         "later_clean": later_clean,
         "holdout_clean": holdout_clean,
     }
-
-
-if __name__ == "__main__":
-    base_dir = Path(__file__).resolve().parents[2]
-
-    train = pd.read_csv(base_dir / "data" / "train.csv")
-    later = pd.read_csv(base_dir / "data" / "later.csv")
-    holdout = pd.read_csv(
-        base_dir / "data" / "holdout_features.csv"
-    )
-
-    result = preprocess_all(train, later, holdout)
-
-    print("PREPROCESSING COMPLETED")
-    print("-" * 45)
-
-    for name in ["X_train", "X_later", "X_holdout"]:
-        print(f"{name}: {result[name].shape}")
-
-    print("\nMissing values after preprocessing:")
-    for name in ["X_train", "X_later", "X_holdout"]:
-        print(name, result[name].isna().sum().sum())
-
-    print("\nTraining target shape:", result["y_train"].shape)
-    print("Later target shape:", result["y_later"].shape)
-
-    print("\nLearned training medians:")
-    print(result["preprocessor"]["numeric_medians"])

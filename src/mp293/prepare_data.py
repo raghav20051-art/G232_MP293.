@@ -6,27 +6,35 @@ from pathlib import Path
 
 import pandas as pd
 
+from src.mp293.config import load_config
 from src.mp293.preprocessing import preprocess_all
 
 
 def main():
-    # Project root directory
+    # Load project configuration.
+    config = load_config()
+    data_config = config["data"]
+
+    # Project root directory.
     project_root = Path(__file__).resolve().parents[2]
 
-    data_dir = project_root / "data"
-    output_dir = data_dir / "processed"
+    # Resolve paths from project root.
+    train_path = project_root / data_config["train_path"]
+    later_path = project_root / data_config["later_path"]
+    holdout_path = project_root / data_config["holdout_path"]
+    output_dir = project_root / data_config["processed_dir"]
 
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    # Load original datasets
-    train = pd.read_csv(data_dir / "train.csv")
-    later = pd.read_csv(data_dir / "later.csv")
-    holdout = pd.read_csv(data_dir / "holdout_features.csv")
+    # Load original datasets.
+    train = pd.read_csv(train_path)
+    later = pd.read_csv(later_path)
+    holdout = pd.read_csv(holdout_path)
 
-    # Run the same preprocessing logic for all datasets
+    # Run preprocessing.
     result = preprocess_all(train, later, holdout)
 
-    # Preserve record identifiers and dates for traceability.
+    # Preserve record identifiers and dates.
     metadata_columns = ["record_id", "date"]
 
     datasets = {
@@ -46,14 +54,15 @@ def main():
         ),
     }
 
-    # Save processed datasets
+    # Save processed datasets.
     for filename, dataframe in datasets.items():
         output_path = output_dir / filename
         dataframe.to_csv(output_path, index=False)
+
         print(f"Saved: {output_path.relative_to(project_root)}")
         print(f"Shape: {dataframe.shape}")
 
-    # Save the training-fitted preprocessing information.
+    # Save training-fitted preprocessing information.
     preprocessor_path = output_dir / "preprocessor.json"
 
     with open(preprocessor_path, "w", encoding="utf-8") as file:
