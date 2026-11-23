@@ -1,53 +1,39 @@
-
-# MP293 findings --- fill in every value, keep every key.
-# The marking tool reads this file. Write null only where the comment says so.
-# Use the exact column names and group values from your data files.
-
-group_id: "G232"
-problem_id: "MP293"
-
+group_id: G232
+problem_id: MP293
 data_issues:
   leaking_column:
     present: false
     column: null
-
   unit_mixup:
     present: true
-    column: "distance_to_market_km"
-    group_value: "Highway"
+    column: distance_to_market_km
+    group_value: Highway
     factor: 1000
-
   sentinel_value:
     present: true
-    column: "avg_ticket_rs"
+    column: avg_ticket_rs
     value: -999
     count: 54
-
   duplicate_rows:
     present: false
     count: null
-
   stuck_sensor:
     present: true
-    column: "days_to_salary"
-    start_date: "2026-04-10"
-    end_date: "2026-04-26"
-
+    column: days_to_salary
+    start_date: '2026-04-10'
+    end_date: '2026-04-26'
   target_typos:
     present: false
     count: null
-
   spelling_variants:
     present: true
-    column: "atm_type"
+    column: atm_type
     true_levels: 3
-
 tracking:
-  experiment_name: null
-  best_run_id: null
-  registered_model_name: null
-  champion_version: null
-
+  experiment_name: ATM_Cash_Demand_Prediction
+  best_run_id: 6967c355c0f34dd79917d07a9f14eae9
+  registered_model_name: atm_cash_demand_model
+  champion_version: 1
 monitoring:
   psi:
     nearby_shops: null
@@ -56,14 +42,11 @@ monitoring:
     distance_to_market_km: null
     avg_ticket_rs: null
     other_atms_1km: null
-
   most_drifted_feature: null
-
   mae_by_group:
-    'Market': null
-    'Residential': null
-    'Highway': null
-
+    Market: null
+    Residential: null
+    Highway: null
   worst_served_group: null
   mae_v1_on_check: null
   mae_v2_on_check: null
