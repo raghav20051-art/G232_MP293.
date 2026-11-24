@@ -3,18 +3,26 @@ stages:
   prepare_data:
     cmd: python -m src.mp293.prepare_data
     deps:
-    - path: data/holdout_features.csv
+    - path: data/raw/holdout_features.csv
       hash: md5
       md5: 125510420eeb0ff033e9ef89ea9a6a3d
       size: 14941
-    - path: data/later.csv
+    - path: data/raw/later.csv
       hash: md5
       md5: 6fce7acffae137ee0df2144ca7315182
       size: 19803
-    - path: data/train.csv
+    - path: data/raw/train.csv
       hash: md5
       md5: ae31bcc61e51c3c74af9b0c9b752c6f2
       size: 65971
+    - path: params.yaml
+      hash: md5
+      md5: ca74b9fb7a04a43ff4245efd85b94f94
+      size: 506
+    - path: src/mp293/config.py
+      hash: md5
+      md5: 7828a0503f58c156d16ecd394dcbd155
+      size: 852
     - path: src/mp293/prepare_data.py
       hash: md5
       md5: ff6598b0977e8d8aab89de9524ebe4fd

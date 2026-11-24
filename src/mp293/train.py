@@ -1,4 +1,4 @@
-"""Stage 2: Model training with MLflow experiment tracking.
+﻿"""Stage 2: Model training with MLflow experiment tracking.
 
 Trains multiple regression models on preprocessed ATM cash demand data,
 logs experiments to MLflow (SQLite backend), and registers the best model.
@@ -22,7 +22,7 @@ from sklearn.model_selection import cross_val_score
 # ---------------------------------------------------------------------------
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 PROCESSED_DIR = PROJECT_ROOT / "data" / "processed"
-RAW_TRAIN_PATH = PROJECT_ROOT / "data" / "train.csv"
+RAW_TRAIN_PATH = PROJECT_ROOT / "data" / "raw" / "train.csv"
 
 # ---------------------------------------------------------------------------
 # MLflow configuration
@@ -247,9 +247,9 @@ def run_experiments(
             results.append((run_id, name, mae))
 
             print(f"  Run ID: {run_id}")
-            print(f"  CV MAE: {mae:.4f} ± {metrics['mae_std']:.4f}")
+            print(f"  CV MAE: {mae:.4f} Â± {metrics['mae_std']:.4f}")
             print(f"  CV RMSE: {metrics['rmse']:.4f}")
-            print(f"  CV R²: {metrics['r2']:.4f}")
+            print(f"  CV RÂ²: {metrics['r2']:.4f}")
 
     print("\n" + "=" * 60)
     print("EXPERIMENT RESULTS SUMMARY")
@@ -343,7 +343,7 @@ def _update_findings(best_run_id, model_name, version):
     """Update the tracking section of findings.yaml."""
     import yaml
 
-    findings_path = PROJECT_ROOT / "findings.yaml"
+    findings_path = PROJECT_ROOT / "reports" / "findings.yaml"
     if not findings_path.exists():
         print("findings.yaml not found, skipping update.")
         return
@@ -366,3 +366,4 @@ def _update_findings(best_run_id, model_name, version):
 
 if __name__ == "__main__":
     main()
+

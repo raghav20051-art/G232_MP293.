@@ -1,10 +1,9 @@
-
 # Project configuration
 
 data:
-  train_path: data/train.csv
-  later_path: data/later.csv
-  holdout_path: data/holdout_features.csv
+  train_path: data/raw/train.csv
+  later_path: data/raw/later.csv
+  holdout_path: data/raw/holdout_features.csv
   processed_dir: data/processed
 
 preprocessing:
