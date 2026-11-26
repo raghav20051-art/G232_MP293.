@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mp293-svc
+  labels:
+    app: mp293-api
+    stage: "3"
+    project: G232-MP293
+spec:
+  selector:
+    app: mp293-api
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 8000
+  type: ClusterIP

@@ -1,0 +1,47 @@
+# Git history
+.git/
+.gitignore
+
+# Python virtual environment
+.venv/
+*.egg-info/
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Raw data (never ship CSV files)
+data/raw/
+data/processed/
+
+# DVC metadata
+.dvc/
+.dvcignore
+*.dvc
+
+# MLflow tracking database and artefacts
+mlflow.db
+mlruns/
+mlartifacts/
+
+# Tests
+tests/
+
+# Documentation / notebooks
+*.md
+*.ipynb
+reports/
+
+# Miscellaneous
+*.log
+.DS_Store
+Thumbs.db
+
+# CI / CD
+.github/
+
+# Kubernetes manifests
+k8s/
+
+# Scripts
+investigate_findings.py
+verify_data.py
