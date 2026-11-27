@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mp293-api
+  labels:
+    app: mp293-api
+    stage: "3"
+    project: G232-MP293
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: mp293-api
+  template:
+    metadata:
+      labels:
+        app: mp293-api
+    spec:
+      containers:
+        - name: mp293-api
+          image: mp293-api:1.0
+          ports:
+            - containerPort: 8000
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 15
+            periodSeconds: 20
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "256Mi"
+            limits:
+              cpu: "1000m"
+              memory: "512Mi"

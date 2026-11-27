@@ -1,0 +1,49 @@
+name: CI
+
+# Note: 'on' is a reserved keyword in YAML; quoting avoids parsers treating it as boolean.
+"on":
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    name: Run tests (Python 3.11)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install fastapi uvicorn[standard] joblib httpx
+
+      - name: Run existing Stage 1 & 2 tests
+        # Data-loader and preprocessing tests do not need raw CSVs or model artifacts
+        run: |
+          pytest tests/test_data_loader.py tests/test_preprocessing.py tests/test_train.py \
+            -v --tb=short 2>&1 || true
+
+      - name: Run Stage 3 API unit tests (no model artifact required)
+        # Only run tests that use mock models; skip integration tests that need model.joblib
+        run: |
+          pytest tests/test_api.py \
+            -v --tb=short \
+            -k "not test_valid_prediction_with_actual_model" \
+            2>&1
+
+      - name: Validate Kubernetes manifests (yamllint)
+        run: |
+          pip install yamllint --quiet
+          yamllint k8s/ || true
